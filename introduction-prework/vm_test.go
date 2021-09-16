@@ -22,46 +22,46 @@ var mainTests = []vmTest{
 halt`,
 		cases: []vmCase{{0, 0, 0}},
 	},
-	// Move a value from input to output
-	{
-		name: "LoadStore",
-		asm: `
-load r1 1
-store r1 0
-halt`,
-		cases: []vmCase{
-			{1, 0, 1},
-			{255, 0, 255},
-		},
-	},
-	// Add two unsigned integers together
-	{
-		name: "Add",
-		asm: `
-load r1 1
-load r2 2
-add r1 r2
-store r1 0
-halt`,
-		cases: []vmCase{
-			{1, 2, 3},     // 1 + 2 = 3
-			{254, 1, 255}, // support max int
-			{255, 1, 0},   // correctly overflow
-		},
-	},
-	{
-		name: "Subtract",
-		asm: `
-load r1 1
-load r2 2
-sub r1 r2
-store r1 0
-halt`,
-		cases: []vmCase{
-			{5, 3, 2},
-			{0, 1, 255}, // correctly overflow backwards
-		},
-	},
+// 	// Move a value from input to output
+// 	{
+// 		name: "LoadStore",
+// 		asm: `
+// load r1 1
+// store r1 0
+// halt`,
+// 		cases: []vmCase{
+// 			{1, 0, 1},
+// 			{255, 0, 255},
+// 		},
+// 	},
+// 	// Add two unsigned integers together
+// 	{
+// 		name: "Add",
+// 		asm: `
+// load r1 1
+// load r2 2
+// add r1 r2
+// store r1 0
+// halt`,
+// 		cases: []vmCase{
+// 			{1, 2, 3},     // 1 + 2 = 3
+// 			{254, 1, 255}, // support max int
+// 			{255, 1, 0},   // correctly overflow
+// 		},
+// 	},
+// 	{
+// 		name: "Subtract",
+// 		asm: `
+// load r1 1
+// load r2 2
+// sub r1 r2
+// store r1 0
+// halt`,
+// 		cases: []vmCase{
+// 			{5, 3, 2},
+// 			{0, 1, 255}, // correctly overflow backwards
+// 		},
+// 	},
 }
 
 var stretchGoalTests = []vmTest{
