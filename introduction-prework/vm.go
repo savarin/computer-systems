@@ -28,7 +28,7 @@ const (
 func compute(memory []byte) {
 
 	registers := [3]byte{8, 0, 0} // PC, R1 and R2
-	var register, address, value byte
+	var register, register1, register2, address, value byte
 
 	// Keep looping, like a physical computer's clock
 loop:
@@ -54,6 +54,20 @@ loop:
 			value = registers[register]
 			memory[address] = value
 
+			registers[0] += 3
+
+		case Add:
+			register1 = memory[pc+1]
+			register2 = memory[pc+2]
+
+			registers[register1] += registers[register2]
+			registers[0] += 3
+
+		case Sub:
+			register1 = memory[pc+1]
+			register2 = memory[pc+2]
+
+			registers[register1] -= registers[register2]
 			registers[0] += 3
 
 		case Halt:
