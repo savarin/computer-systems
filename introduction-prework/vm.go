@@ -28,15 +28,34 @@ const (
 func compute(memory []byte) {
 
 	registers := [3]byte{8, 0, 0} // PC, R1 and R2
+	var register, address, value byte
 
 	// Keep looping, like a physical computer's clock
-	loop:
+loop:
 	for {
-
-		op := memory[registers[0]] // fetch the opcode
+		pc := registers[0]
+		op := memory[pc] // fetch the opcode
 
 		// decode and execute
 		switch op {
+		case Load:
+			register = memory[pc+1]
+			address = memory[pc+2]
+
+			value = memory[address]
+			registers[register] = value
+
+			registers[0] += 3
+
+		case Store:
+			register = memory[pc+1]
+			address = memory[pc+2]
+
+			value = registers[register]
+			memory[address] = value
+
+			registers[0] += 3
+
 		case Halt:
 			break loop
 		}
