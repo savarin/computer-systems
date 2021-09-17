@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -62,9 +61,6 @@ halt`,
 			{0, 1, 255}, // correctly overflow backwards
 		},
 	},
-}
-
-var stretchGoalTests = []vmTest{
 	// Support a basic jump, ie skipping ahead to a particular location
 	{
 		name: "Jump",
@@ -126,13 +122,6 @@ halt`,
 func TestCompute(t *testing.T) {
 	for _, test := range mainTests {
 		t.Run(test.name, func(t *testing.T) { testCompute(t, test) })
-	}
-	if os.Getenv("STRETCH") != "true" {
-		println("Skipping stretch goal tests. Run `STRETCH=true go test` to include them.")
-	} else {
-		for _, test := range stretchGoalTests {
-			t.Run(test.name, func(t *testing.T) { testCompute(t, test) })
-		}
 	}
 }
 

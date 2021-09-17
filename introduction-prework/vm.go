@@ -1,5 +1,9 @@
 package vm
 
+import (
+	"fmt"
+)
+
 const (
 	Load  = 0x01
 	Store = 0x02
@@ -28,10 +32,8 @@ const (
 func compute(memory []byte) {
 
 	registers := [3]byte{8, 0, 0} // PC, R1 and R2
-	var register, register1, register2, address, value byte
 
 	// Keep looping, like a physical computer's clock
-loop:
 	for {
 		pc := registers[0]
 		op := memory[pc] // fetch the opcode
@@ -39,39 +41,53 @@ loop:
 		// decode and execute
 		switch op {
 		case Load:
-			register = memory[pc+1]
-			address = memory[pc+2]
+			register, address := memory[pc+1], memory[pc+2]
 
-			value = memory[address]
+			value := memory[address]
 			registers[register] = value
 
-			registers[0] += 3
-
 		case Store:
-			register = memory[pc+1]
-			address = memory[pc+2]
+			register, address := memory[pc+1], memory[pc+2]
 
-			value = registers[register]
+			value := registers[register]
 			memory[address] = value
 
-			registers[0] += 3
-
 		case Add:
-			register1 = memory[pc+1]
-			register2 = memory[pc+2]
-
+			register1, register2 := memory[pc+1], memory[pc+2]
 			registers[register1] += registers[register2]
-			registers[0] += 3
 
 		case Sub:
-			register1 = memory[pc+1]
-			register2 = memory[pc+2]
-
+			register1, register2 := memory[pc+1], memory[pc+2]
 			registers[register1] -= registers[register2]
-			registers[0] += 3
+
+		case Addi:
+			register, i := memory[pc+1], memory[pc+2]
+			registers[register] += i
+
+		case Subi:
+			register, i := memory[pc+1], memory[pc+2]
+			registers[register] -= i
+
+		case Jump:
+			address := memory[pc+1]
+			registers[0] = address
+			continue
+
+		case Beqz:
+			register, offset := memory[pc+1], memory[pc+2]
+
+			if registers[register] == 0 {
+				registers[0] += offset + 3
+				continue
+			}
 
 		case Halt:
-			break loop
+			return
+
+		default:
+			panic(fmt.Sprintf("unknown opcode %x", op))
 		}
+
+		registers[0] += 3
 	}
 }
