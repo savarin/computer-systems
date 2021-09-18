@@ -38,54 +38,44 @@ func compute(memory []byte) {
 		pc := registers[0]
 		op := memory[pc] // fetch the opcode
 
+		if op == Halt {
+			return
+		}
+
+		arg1, arg2 := memory[pc+1], memory[pc+2]
+
 		// decode and execute
 		switch op {
 		case Load:
-			register, address := memory[pc+1], memory[pc+2]
-
-			value := memory[address]
-			registers[register] = value
+			registers[arg1] = memory[arg2]
 
 		case Store:
-			register, address := memory[pc+1], memory[pc+2]
-
-			value := registers[register]
-			memory[address] = value
+			memory[arg2] = registers[arg1]
 
 		case Add:
-			register1, register2 := memory[pc+1], memory[pc+2]
-			registers[register1] += registers[register2]
+			registers[arg1] += registers[arg2]
 
 		case Sub:
-			register1, register2 := memory[pc+1], memory[pc+2]
-			registers[register1] -= registers[register2]
+			registers[arg1] -= registers[arg2]
 
 		case Addi:
-			register, i := memory[pc+1], memory[pc+2]
-			registers[register] += i
+			registers[arg1] += arg2
 
 		case Subi:
-			register, i := memory[pc+1], memory[pc+2]
-			registers[register] -= i
+			registers[arg1] -= arg2
 
 		case Jump:
-			address := memory[pc+1]
-			registers[0] = address
+			registers[0] = arg1
 			continue
 
 		case Beqz:
-			register, offset := memory[pc+1], memory[pc+2]
-
-			if registers[register] == 0 {
-				registers[0] += offset + 3
+			if registers[arg1] == 0 {
+				registers[0] += arg2 + 3
 				continue
 			}
 
-		case Halt:
-			return
-
 		default:
-			panic(fmt.Sprintf("unknown opcode %x", op))
+			panic(fmt.Sprintf("Invalid opcode 0x%02x", op))
 		}
 
 		registers[0] += 3
