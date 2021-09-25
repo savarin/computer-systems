@@ -5,8 +5,8 @@ pangram:
 		jmp .loop
 
 .loop	movzx	rcx, byte [rdi]		; read byte from rdi to rcx
-		cmp		rcx, 10				; end if newline
-		je .end
+		cmp		rcx, 0				; end if null
+		je .final
 		add		rdi, 1				; increase index to set up next byte selection
 		or		rcx, 0x20			; converts uppercase to lowercase and retains lowercase
 		cmp		rcx, 0x61			; compare against 'A'
@@ -26,7 +26,7 @@ pangram:
 .or		or		rax, rbx			; binary or to running sum
 		jmp .loop
 
-.end	cmp		rax, 67108863		; pangram returns 2^0 + 2^1 + ... + 2^25
+.final	cmp		rax, 67108863		; pangram returns 2^0 + 2^1 + ... + 2^25
 		je .true
 		mov		rax, 0
 		ret
