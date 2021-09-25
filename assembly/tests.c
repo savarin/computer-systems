@@ -24,21 +24,21 @@ void test_convert_10101101(void) {
   TEST_ASSERT_EQUAL(173, binary_convert("10101101"));
 }
 
-void test_pangram_empty(void) { TEST_ASSERT_FALSE(pangram("")); }
+void test_pangram_empty(void) { TEST_ASSERT_FALSE(pangram("\n")); }
 void test_pangram_alpha(void) {
-  TEST_ASSERT_TRUE(pangram("abcdefghijklmnopqrstuvwxyz"));
+  TEST_ASSERT_TRUE(pangram("abcdefghijklmnopqrstuvwxyz\n"));
 }
 void test_pangram_punctuated(void) {
-  TEST_ASSERT_TRUE(pangram("abc, def! ghi... jkl25; mnopqrstuvwxyz"));
+  TEST_ASSERT_TRUE(pangram("abc, def! ghi... jkl25; mnopqrstuvwxyz\n"));
 }
 void test_pangram_incomplete(void) {
-  TEST_ASSERT_FALSE(pangram("abcdefghijklmnopqrstuvwxy"));
+  TEST_ASSERT_FALSE(pangram("abcdefghijklmnopqrstuvwxy\n"));
 }
 void test_pangram_mixed_case(void) {
-  TEST_ASSERT_TRUE(pangram("ABCdefGHIjklMNOpqrSTUvwxYZ"));
+  TEST_ASSERT_TRUE(pangram("ABCdefGHIjklMNOpqrSTUvwxYZ\n"));
 }
 void test_pangram_phrase(void) {
-  TEST_ASSERT_TRUE(pangram("the quick brown fox jumps over teh lazy dog"));
+  TEST_ASSERT_TRUE(pangram("the quick brown fox jumps over teh lazy dog\n"));
 }
 
 int main(void) {
