@@ -1,8 +1,7 @@
 section .text
 global sum_to_n
 sum_to_n:	
-		mov		rax, 0		; set rax as running sum
-		jmp .loop
+		xor		rax, rax	; set rax as running sum
 
 .loop	test	rdi, rdi	; line up rdi for jump if zero
 		jz .end

@@ -1,7 +1,7 @@
 section .text
 global binary_convert
 binary_convert:
-		mov		rax, 0				; set up rax as running sum
+		xor		rax, rax			; set up rax as running sum
 		mov		rbx, 512			; initialize rbx as large exponent of 2
 		jmp .loop
 
@@ -14,7 +14,7 @@ binary_convert:
 		je .add
 		cmp		rcx, 48				; compare to '0'
 		je .loop
-		mov		rax, 0				; if neither '0' or '1', reset and end
+		xor		rax, rax			; if neither '0' or '1', reset and end
 		jmp .end
 
 .add	add		rax, rbx

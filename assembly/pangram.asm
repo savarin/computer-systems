@@ -1,7 +1,7 @@
 section .text
 global pangram
 pangram:
-		mov		rax, 0				; set up rax as running sum
+		xor		rax, rax			; set up rax as running sum
 		jmp .loop
 
 .loop	movzx	rcx, byte [rdi]		; read byte from rdi to rcx
