@@ -15,15 +15,8 @@ pangram:
 		jg .loop					; if greater, next character
 		sub		rcx, 0x61			; subtract 'A' to obtain exponent n
 		mov		rbx, 1				; initialize number for 2^n
-		jmp .shift
-
-.shift	cmp		rcx, 0				; loop to shift left to obtain 2^n
-		je .or
-		shl		rbx, 1
-		dec		rcx
-		jmp .shift
-
-.or		or		rax, rbx			; binary or to running sum
+		shl		rbx, cl             ; shift left to obtain 2^n
+		or		rax, rbx			; binary or to running sum
 		jmp .loop
 
 .final	cmp		rax, 67108863		; pangram returns 2^0 + 2^1 + ... + 2^25
