@@ -3,6 +3,7 @@
 extern int sum_to_n(int n);
 extern int binary_convert(char *bits);
 extern int pangram(char *phrase);
+extern int fib(int n);
 
 void setUp(void) {
 }
@@ -41,6 +42,13 @@ void test_pangram_phrase(void) {
   TEST_ASSERT_TRUE(pangram("the quick brown fox jumps over teh lazy dog"));
 }
 
+void test_fib_0(void) { TEST_ASSERT_EQUAL(0, fib(0)); }
+void test_fib_1(void) { TEST_ASSERT_EQUAL(1, fib(1)); }
+void test_fib_2(void) { TEST_ASSERT_EQUAL(1, fib(2)); }
+void test_fib_3(void) { TEST_ASSERT_EQUAL(2, fib(3)); }
+void test_fib_10(void) { TEST_ASSERT_EQUAL(55, fib(10)); }
+void test_fib_12(void) { TEST_ASSERT_EQUAL(144, fib(12)); }
+
 int main(void) {
     UNITY_BEGIN();
 
@@ -62,6 +70,13 @@ int main(void) {
     RUN_TEST(test_pangram_incomplete);
     RUN_TEST(test_pangram_mixed_case);
     RUN_TEST(test_pangram_phrase);
+
+    RUN_TEST(test_fib_0);
+    RUN_TEST(test_fib_1);
+    RUN_TEST(test_fib_2);
+    RUN_TEST(test_fib_3);
+    RUN_TEST(test_fib_10);
+    RUN_TEST(test_fib_12);
 
     return UNITY_END();
 }
