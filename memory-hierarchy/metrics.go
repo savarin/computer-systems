@@ -8,12 +8,12 @@ import (
 )
 
 func AverageAge(ages []int) float64 {
-	average, count := 0.0, 0.0
+	count := len(ages)
+	average := 0
 	for _, age := range ages {
-		count += 1
-		average += (float64(age) - average) / count
+		average += age
 	}
-	return average
+	return float64(average) / float64(count)
 }
 
 func LoadData() []int {
