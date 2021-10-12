@@ -3,7 +3,7 @@ package metrics
 import (
 	"encoding/csv"
 	"log"
-	"math"
+	// "math"
 	"os"
 	"strconv"
 	"time"
@@ -41,33 +41,6 @@ func AverageAge(users UserMap) float64 {
 		average += (float64(u.age) - average) / count
 	}
 	return average
-}
-
-func AveragePaymentAmount(users UserMap) float64 {
-	average, count := 0.0, 0.0
-	for _, u := range users {
-		for _, p := range u.payments {
-			count += 1
-			amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
-			average += (amount - average) / count
-		}
-	}
-	return average
-}
-
-// Compute the standard deviation of payment amounts
-func StdDevPaymentAmount(users UserMap) float64 {
-	mean := AveragePaymentAmount(users)
-	squaredDiffs, count := 0.0, 0.0
-	for _, u := range users {
-		for _, p := range u.payments {
-			count += 1
-			amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
-			diff := amount - mean
-			squaredDiffs += diff * diff
-		}
-	}
-	return math.Sqrt(squaredDiffs / count)
 }
 
 func LoadData() UserMap {
