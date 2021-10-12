@@ -7,7 +7,9 @@ import (
 	"strconv"
 )
 
-func AverageAge(ages []uint8) float64 {
+type custom uint64
+
+func AverageAge(ages []custom) float64 {
 	count := len(ages)
 	limit := count - 3
 	average0, average1, average2, average3 := uint64(0), uint64(0), uint64(0), uint64(0)
@@ -24,7 +26,7 @@ func AverageAge(ages []uint8) float64 {
 	return float64(average0+average1+average2+average3) / float64(count)
 }
 
-func LoadData() []uint8 {
+func LoadData() []custom {
 	f, err := os.Open("users.csv")
 	if err != nil {
 		log.Fatalln("Unable to read users.csv", err)
@@ -35,10 +37,10 @@ func LoadData() []uint8 {
 		log.Fatalln("Unable to parse users.csv as csv", err)
 	}
 
-	users := make([]uint8, len(userLines))
+	users := make([]custom, len(userLines))
 	for i, line := range userLines {
 		age, _ := strconv.Atoi(line[2])
-		users[i] = uint8(age)
+		users[i] = custom(age)
 	}
 
 	return users
