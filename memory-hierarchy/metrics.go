@@ -10,8 +10,8 @@ import (
 func AverageAge(ages []int) float64 {
 	count := len(ages)
 	average := 0
-	for _, age := range ages {
-		average += age
+	for i := range ages {
+		average += ages[i]
 	}
 	return float64(average) / float64(count)
 }
