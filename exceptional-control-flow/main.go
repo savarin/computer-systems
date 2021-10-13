@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -52,16 +53,19 @@ func parent(ctx context.Context) {
 		// ReadString reads until the first occurrence of delim in the input, returning a string
 		// containing the data up to and including the delimiter.
 		//   https://pkg.go.dev/bufio#Reader.ReadString
-		cmd, _ := reader.ReadString('\n')
-		cmd = cmd[:len(cmd)-1]
+		input, _ := reader.ReadString('\n')
+		input = input[:len(input)-1]
+
+		args := strings.Split(input, " ")
+		cmd, args := args[0], args[1:]
 
 		if cmd == "exit" {
-			fmt.Println("Exit shell.")
+			fmt.Println("✨ exit shell ✨")
 			break
 		}
 
-		if cmd == "pwd" || cmd == "ls" {
-			go child(ctx, cmd, c)
+		if cmd == "pwd" || cmd == "ls" || cmd == "echo" {
+			go child(ctx, cmd, args, c)
 
 			select {
 			case <-ctx.Done():
@@ -82,7 +86,7 @@ func parent(ctx context.Context) {
 	wg.Done()
 }
 
-func child(ctx context.Context, cmd string, c chan int) {
+func child(ctx context.Context, cmd string, args []string, c chan int) {
 	log("child start")
 
 	switch cmd {
@@ -90,6 +94,8 @@ func child(ctx context.Context, cmd string, c chan int) {
 		fmt.Println("present working directory")
 	case "ls":
 		fmt.Println("list directory contents")
+	case "echo":
+		fmt.Println(strings.Join(args, " "))
 	}
 
 	log("child end")
