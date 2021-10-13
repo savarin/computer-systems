@@ -1,5 +1,6 @@
 // TODO:
 // - handle eof terminal character
+// - catch non-numerical sleep argument
 
 package main
 
@@ -33,6 +34,8 @@ func main() {
 	//   https://stackoverflow.com/questions/56224836/stop-child-goroutine-when-parent-returns
 	wg.Add(1)
 
+	// WithCancel returns a copy of parent with a new Done channel.
+	//   https://pkg.go.dev/context#WithCancel
 	ctx, cancel := context.WithCancel(context.Background())
 	go parent(ctx)
 	wg.Wait()
@@ -97,6 +100,8 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 	switch cmd {
 
 	case "pwd":
+		// Getwd returns a rooted path name corresponding to the current directory.
+		//   https://pkg.go.dev/os#Getwd
 		dir, err := os.Getwd()
 		if err != nil {
 			log.Fatal(err)
@@ -104,6 +109,9 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 		fmt.Println(dir)
 
 	case "ls":
+		// ReadDir reads the directory named by dirname and returns a list of fs.FileInfo for the
+		// directory's contents, sorted by filename
+		//   https://pkg.go.dev/io/ioutil#ReadDir
 		files, err := ioutil.ReadDir(".")
 		if err != nil {
 			log.Fatal(err)
@@ -116,6 +124,9 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 		fmt.Println(strings.Join(args, " "))
 
 	case "sleep":
+		// ParseInt interprets a string s in the given base (0, 2 to 36) and bit size (0 to 64) and
+		// returns the corresponding value i.
+		//   https://pkg.go.dev/strconv#ParseInt
 		duration, err := strconv.ParseInt(args[0], 10, 64)
 		if err != nil {
 			log.Fatal(err)
