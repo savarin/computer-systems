@@ -30,6 +30,8 @@ func status(msg string) {
 }
 
 func main() {
+	// Bind cli argument to variable.
+	//   https://pkg.go.dev/flag#BoolVar
 	flag.BoolVar(&debug, "debug", false, "Set up debug mode.")
 	flag.Parse()
 
@@ -42,9 +44,13 @@ func main() {
 	//   https://stackoverflow.com/questions/56224836/stop-child-goroutine-when-parent-returns
 	wg.Add(1)
 
+	// Package context defines the Context type, which carries deadlines, cancellation signals, and
+	// other request-scoped values across API boundaries and between processes.
+	//   https://pkg.go.dev/context
+	ctx := context.Background()
 	// WithCancel returns a copy of parent with a new Done channel.
 	//   https://pkg.go.dev/context#WithCancel
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer func() {
 		cancel()
 	}()
@@ -71,13 +77,12 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 
 	// Set up channel for child goroutines.
 	c := make(chan int)
-	defer func() {
-		close(c)
-	}()
 
+	// Package signal implements access to incoming signals.
+	//   https://pkg.go.dev/os/signal
+	s := make(chan os.Signal, 1)
 	// Set up channel to catch interrupt signals.
 	//   https://pace.dev/blog/2020/02/17/repond-to-ctrl-c-interrupt-signals-gracefully-with-context-in-golang-by-mat-ryer.html
-	s := make(chan os.Signal, 1)
 	signal.Notify(s, os.Interrupt)
 	status("signal start")
 	defer func() {
