@@ -12,7 +12,8 @@ age
 
 payments
 
-- [baseline](https://github.com/savarin/computer-systems/blob/097cddffbcdb2d3e4b7c20579a75335f4227ea3c/memory-hierarchy/metrics.go) 29184902 / 56645657 ns/op
+- [baseline](https://github.com/savarin/computer-systems/blob/097cddffbcdb2d3e4b7c20579a75335f4227ea3c/memory-hierarchy/metrics.go) 29136655 / 56252055 ns/op
 - [convert to array](https://github.com/savarin/computer-systems/commit/809b74f086014e593317039d704a3971e5545154?branch=809b74f086014e593317039d704a3971e5545154&diff=split)	5398410 / 6379861 ns/op
-- [non-overflow safe sum](https://github.com/savarin/computer-systems/commit/8cfbe02f22d8ecd3e8ccb9bd3f1002bfde1967dc?branch=8cfbe02f22d8ecd3e8ccb9bd3f1002bfde1967dc&diff=split)	995995 / 1997440 ns/op
-- [use float32](https://github.com/savarin/computer-systems/commit/adaa6497c5573f03cd882d15b62a4ed7d054572a?branch=adaa6497c5573f03cd882d15b62a4ed7d054572a&diff=split)	976023 / 1957138 ns/op
+- [non-overflow safe sum](https://github.com/savarin/computer-systems/commit/8cfbe02f22d8ecd3e8ccb9bd3f1002bfde1967dc?branch=8cfbe02f22d8ecd3e8ccb9bd3f1002bfde1967dc&diff=split)	1093093 / 2377747 ns/op
+- [use float32](https://github.com/savarin/computer-systems/commit/adaa6497c5573f03cd882d15b62a4ed7d054572a?branch=adaa6497c5573f03cd882d15b62a4ed7d054572a&diff=split)	1078355 / 2029108 ns/op
+- [loop unrolling](https://github.com/savarin/computer-systems/commit/6d0a03625a41bc17a477198336615c912fb514d2?branch=6d0a03625a41bc17a477198336615c912fb514d2&diff=split)	511733 / 1313912 ns/op
