@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -17,7 +18,7 @@ import (
 
 var wg sync.WaitGroup
 
-var debug = true
+var debug bool
 var timeout = 60
 
 func status(msg string) {
@@ -29,6 +30,9 @@ func status(msg string) {
 }
 
 func main() {
+	flag.BoolVar(&debug, "debug", false, "Set up debug mode.")
+	flag.Parse()
+
 	status("main start")
 	defer func() {
 		status("main end")
@@ -65,13 +69,13 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 		fmt.Println("✨ exit shell ✨")
 	}()
 
-	// NewReader returns a new Reader whose buffer has the default size.
-	//   https://pkg.go.dev/bufio#NewReader
-	reader := bufio.NewReader(os.Stdin)
-
+	// Set up channel for child goroutines.
 	c := make(chan int)
+	defer func() {
+		close(c)
+	}()
 
-	// Set up channel to catch interrupt signal.
+	// Set up channel to catch interrupt signals.
 	//   https://pace.dev/blog/2020/02/17/repond-to-ctrl-c-interrupt-signals-gracefully-with-context-in-golang-by-mat-ryer.html
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, os.Interrupt)
@@ -81,6 +85,10 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 		close(s)
 		status("signal end")
 	}()
+
+	// NewReader returns a new Reader whose buffer has the default size.
+	//   https://pkg.go.dev/bufio#NewReader
+	reader := bufio.NewReader(os.Stdin)
 
 	for {
 		fmt.Print("▶️  ")
