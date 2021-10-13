@@ -27,23 +27,38 @@ func AverageAge(ages []uint8) float64 {
 
 func AveragePaymentAmount(payments []float32) float64 {
 	count := len(payments)
-	average := 0.0
-	for _, payment := range payments {
-		average += float64(payment)
+	limit := count - 3
+	average0, average1, average2, average3 := float64(0), float64(0), float64(0), float64(0)
+	i := 0
+	for ; i < limit; i += 4 {
+		average0 += float64(payments[i])
+		average1 += float64(payments[i+1])
+		average2 += float64(payments[i+2])
+		average3 += float64(payments[i+3])
 	}
-	return average / float64(count)
+	for ; i < count; i++ {
+		average0 += float64(payments[i])
+	}
+	return (average0 + average1 + average2 + average3) / float64(count)
 }
 
 // Compute the standard deviation of payment amounts
 func StdDevPaymentAmount(payments []float32) float64 {
 	mean := AveragePaymentAmount(payments)
 	count := len(payments)
-	squares := 0.0
-	for _, payment := range payments {
-		amount := float64(payment)
-		squares += amount * amount
+	limit := count - 3
+	squares0, squares1, squares2, squares3 := float64(0), float64(0), float64(0), float64(0)
+	i := 0
+	for ; i < limit; i += 4 {
+		squares0 += float64(payments[i] * payments[i])
+		squares1 += float64(payments[i+1] * payments[i+1])
+		squares2 += float64(payments[i+2] * payments[i+2])
+		squares3 += float64(payments[i+3] * payments[i+3])
 	}
-	return math.Sqrt(squares/float64(count) - mean*mean)
+	for ; i < count; i++ {
+		squares0 += float64(payments[i] * payments[i])
+	}
+	return math.Sqrt((squares0+squares1+squares2+squares3)/float64(count) - mean*mean)
 }
 
 func LoadData() ([]uint8, []float32) {
