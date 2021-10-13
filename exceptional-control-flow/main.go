@@ -1,6 +1,3 @@
-// TODO:
-// - handle eof terminal character
-
 package main
 
 import (
@@ -20,17 +17,24 @@ import (
 
 var wg sync.WaitGroup
 
+var debug = true
 var timeout = 60
 
 func status(msg string) {
-	t := time.Now()
-	ts := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
-	fmt.Printf("%s thread %d - %s\n", ts, runtime.NumGoroutine(), msg)
+	if debug {
+		t := time.Now()
+		ts := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+		fmt.Printf("%s thread %d - %s\n", ts, runtime.NumGoroutine(), msg)
+	}
 }
 
 func main() {
 	status("main start")
-	// Rewrote as nested routines.
+	defer func() {
+		status("main end")
+	}()
+
+	// Re-implement basic loop as nested routines.
 	//   https://stackoverflow.com/questions/56224836/stop-child-goroutine-when-parent-returns
 	wg.Add(1)
 
@@ -42,17 +46,28 @@ func main() {
 	}()
 
 	go parent(ctx, cancel)
-	wg.Wait()
+	defer func() {
+		status("parent complete")
+	}()
 
-	// Stop main from immediate exit.
-	time.Sleep(time.Second)
-	status("parent complete")
-	status("main end")
+	wg.Wait()
 }
 
 func parent(ctx context.Context, cancel context.CancelFunc) {
 	status("parent start")
+	defer func() {
+		status("parent end")
+		wg.Done()
+	}()
+
 	fmt.Println("✨ enter shell ✨")
+	defer func() {
+		fmt.Println("✨ exit shell ✨")
+	}()
+
+	// NewReader returns a new Reader whose buffer has the default size.
+	//   https://pkg.go.dev/bufio#NewReader
+	reader := bufio.NewReader(os.Stdin)
 
 	c := make(chan int)
 
@@ -63,12 +78,9 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 	status("signal start")
 	defer func() {
 		signal.Stop(s)
+		close(s)
 		status("signal end")
 	}()
-
-	// NewReader returns a new Reader whose buffer has the default size.
-	//   https://pkg.go.dev/bufio#NewReader
-	reader := bufio.NewReader(os.Stdin)
 
 	for {
 		fmt.Print("▶️  ")
@@ -83,18 +95,15 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 		cmd, args := args[0], args[1:]
 
 		if cmd == "exit" {
-			fmt.Println("✨ exit shell ✨")
 			break
 		}
 
 		if cmd == "pwd" || cmd == "ls" || cmd == "echo" || cmd == "sleep" {
-			go child(ctx, cmd, args, c)
+			go child(ctx, cancel, cmd, args, c, s)
 
 			select {
 			case <-ctx.Done():
 				status("parent content expired")
-			case <-s:
-				cancel()
 			case <-c:
 				status("child complete")
 			case <-time.After(time.Duration(timeout) * time.Second):
@@ -106,13 +115,14 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 
 		fmt.Printf("%s: command not found\n", cmd)
 	}
-
-	status("parent end")
-	wg.Done()
 }
 
-func child(ctx context.Context, cmd string, args []string, c chan int) {
+func child(ctx context.Context, cancel context.CancelFunc, cmd string, args []string, c chan int, s chan os.Signal) {
 	status("child start")
+	defer func() {
+		status("child end")
+		c <- 1
+	}()
 
 	switch cmd {
 
@@ -141,6 +151,7 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 		if err != nil {
 			fmt.Printf("%s: please specify a valid path\n", args[0])
 		}
+
 		for _, file := range files {
 			fmt.Println(file.Name())
 		}
@@ -153,10 +164,15 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 		if err != nil {
 			fmt.Printf("%s: please specify an integer\n", args[0])
 		}
-		time.Sleep(time.Duration(duration) * time.Second)
-		fmt.Println("SLEEP COMPLETE")
-	}
 
-	status("child end")
-	c <- 1
+		fmt.Printf("sleep for %d seconds...\n", duration)
+
+		select {
+		case <-s:
+			fmt.Println("sleep interrupted!")
+			cancel()
+		case <-time.After(time.Duration(duration) * time.Second):
+			fmt.Println("sleep complete!")
+		}
+	}
 }
