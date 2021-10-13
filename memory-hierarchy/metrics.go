@@ -26,24 +26,23 @@ func AverageAge(ages []uint8) float64 {
 }
 
 func AveragePaymentAmount(payments []float64) float64 {
-	average, count := 0.0, 0.0
+	count := len(payments)
+	average := 0.0
 	for _, payment := range payments {
-		count += 1
-		average += (payment - average) / count
+		average += payment
 	}
-	return average
+	return average / float64(count)
 }
 
 // Compute the standard deviation of payment amounts
 func StdDevPaymentAmount(payments []float64) float64 {
 	mean := AveragePaymentAmount(payments)
-	squaredDiffs, count := 0.0, 0.0
+	count := len(payments)
+	squares := 0.0
 	for _, payment := range payments {
-		count += 1
-		diff := payment - mean
-		squaredDiffs += diff * diff
+		squares += payment * payment
 	}
-	return math.Sqrt(squaredDiffs / count)
+	return math.Sqrt(squares/float64(count) - mean*mean)
 }
 
 func LoadData() ([]uint8, []float64) {
