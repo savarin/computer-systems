@@ -1,5 +1,5 @@
 
-average-age
+age
 
 - [baseline](https://github.com/savarin/computer-systems/blob/5bf88d681aa56e0f8650c00756ae18dd68a9dd0f/memory-hierarchy/metrics.go)	2207043 ns/op
 - [convert to array](https://github.com/savarin/computer-systems/commit/d25677e18a31621262e6c151a56079964f45d6cc?branch=d25677e18a31621262e6c151a56079964f45d6cc&diff=split)	535163 ns/op
@@ -8,3 +8,8 @@ average-age
 - [use uint8](https://github.com/savarin/computer-systems/commit/bbff04d1aaf6e545170384dedbf37ac6a4529872?branch=bbff04d1aaf6e545170384dedbf37ac6a4529872&diff=split)	30283 ns/op
 - [loop unrolling](https://github.com/savarin/computer-systems/commit/b181e048307c5b6a947bdde545ab8e8d11ccb4ff?branch=b181e048307c5b6a947bdde545ab8e8d11ccb4ff&diff=split)	27246 ns/op
 - [remove bound checks](https://github.com/savarin/computer-systems/commit/879aae6fe0ab4d2edba7cc37133e8498c29ae034?branch=879aae6fe0ab4d2edba7cc37133e8498c29ae034&diff=split)	18240 ns/op
+
+
+payments
+
+- [baseline](https://github.com/savarin/computer-systems/blob/097cddffbcdb2d3e4b7c20579a75335f4227ea3c/memory-hierarchy/metrics.go) 29184902 / 56645657 ns/op
