@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -101,15 +102,16 @@ func parent(ctx context.Context, cancel context.CancelFunc) {
 		// ReadString reads until the first occurrence of delim in the input, returning a string
 		// containing the data up to and including the delimiter.
 		//   https://pkg.go.dev/bufio#Reader.ReadString
-		input, _ := reader.ReadString('\n')
-		input = input[:len(input)-1]
+		input, err := reader.ReadString('\n')
 
-		args := strings.Split(input, " ")
-		cmd, args := args[0], args[1:]
-
-		if cmd == "exit" {
+		// Allow exit via eof terminal control character or "exit".
+		if err == io.EOF || input == "exit\n" {
 			break
 		}
+
+		// Remove newline character and split string by space delimiter.
+		args := strings.Split(input[:len(input)-1], " ")
+		cmd, args := args[0], args[1:]
 
 		if cmd == "pwd" || cmd == "ls" || cmd == "echo" || cmd == "sleep" {
 			go child(ctx, cancel, cmd, args, c, s)
