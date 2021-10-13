@@ -14,3 +14,4 @@ payments
 
 - [baseline](https://github.com/savarin/computer-systems/blob/097cddffbcdb2d3e4b7c20579a75335f4227ea3c/memory-hierarchy/metrics.go) 29184902 / 56645657 ns/op
 - [convert to array](https://github.com/savarin/computer-systems/commit/809b74f086014e593317039d704a3971e5545154?branch=809b74f086014e593317039d704a3971e5545154&diff=split)	5398410 / 6379861 ns/op
+- [non-overflow safe sum](https://github.com/savarin/computer-systems/commit/8cfbe02f22d8ecd3e8ccb9bd3f1002bfde1967dc?branch=8cfbe02f22d8ecd3e8ccb9bd3f1002bfde1967dc&diff=split)	995995 / 1997440 ns/op
