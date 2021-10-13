@@ -1,6 +1,7 @@
 // TODO:
 // - handle eof terminal character
 // - catch non-numerical sleep argument
+// - non-current directory ls
 
 package main
 
@@ -108,20 +109,25 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 		}
 		fmt.Println(dir)
 
+	case "echo":
+		fmt.Println(strings.Join(args, " "))
+
 	case "ls":
+		path := "."
+		if len(args) != 0 {
+			path = args[0]
+		}
+
 		// ReadDir reads the directory named by dirname and returns a list of fs.FileInfo for the
 		// directory's contents, sorted by filename
 		//   https://pkg.go.dev/io/ioutil#ReadDir
-		files, err := ioutil.ReadDir(".")
+		files, err := ioutil.ReadDir(path)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("%s: please specify a valid path\n", args[0])
 		}
 		for _, file := range files {
 			fmt.Println(file.Name())
 		}
-
-	case "echo":
-		fmt.Println(strings.Join(args, " "))
 
 	case "sleep":
 		// ParseInt interprets a string s in the given base (0, 2 to 36) and bit size (0 to 64) and
@@ -129,7 +135,7 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 		//   https://pkg.go.dev/strconv#ParseInt
 		duration, err := strconv.ParseInt(args[0], 10, 64)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("%s: please specify an integer\n", args[0])
 		}
 		time.Sleep(time.Duration(duration) * time.Second)
 	}
