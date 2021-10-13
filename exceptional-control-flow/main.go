@@ -7,8 +7,11 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -16,14 +19,16 @@ import (
 
 var wg sync.WaitGroup
 
-func log(msg string) {
+var timeout = 60
+
+func status(msg string) {
 	t := time.Now()
 	ts := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 	fmt.Printf("%s thread %d - %s\n", ts, runtime.NumGoroutine(), msg)
 }
 
 func main() {
-	log("main start")
+	status("main start")
 	// Rewrote as nested routines.
 	//   https://stackoverflow.com/questions/56224836/stop-child-goroutine-when-parent-returns
 	wg.Add(1)
@@ -35,12 +40,12 @@ func main() {
 
 	// Stop main from immediate exit.
 	time.Sleep(time.Second)
-	log("parent complete")
-	log("main end")
+	status("parent complete")
+	status("main end")
 }
 
 func parent(ctx context.Context) {
-	log("parent start")
+	status("parent start")
 	c := make(chan int)
 
 	// NewReader returns a new Reader whose buffer has the default size.
@@ -64,16 +69,16 @@ func parent(ctx context.Context) {
 			break
 		}
 
-		if cmd == "pwd" || cmd == "ls" || cmd == "echo" {
+		if cmd == "pwd" || cmd == "ls" || cmd == "echo" || cmd == "sleep" {
 			go child(ctx, cmd, args, c)
 
 			select {
 			case <-ctx.Done():
-				log("parent content expired")
+				status("parent content expired")
 			case <-c:
-				log("child complete")
-			case <-time.After(time.Duration(3) * time.Second):
-				log("child timeout")
+				status("child complete")
+			case <-time.After(time.Duration(timeout) * time.Second):
+				status("child timeout")
 			}
 
 			continue
@@ -82,22 +87,42 @@ func parent(ctx context.Context) {
 		fmt.Printf("%s: command not found\n", cmd)
 	}
 
-	log("parent end")
+	status("parent end")
 	wg.Done()
 }
 
 func child(ctx context.Context, cmd string, args []string, c chan int) {
-	log("child start")
+	status("child start")
 
 	switch cmd {
+
 	case "pwd":
-		fmt.Println("present working directory")
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(dir)
+
 	case "ls":
-		fmt.Println("list directory contents")
+		files, err := ioutil.ReadDir(".")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, file := range files {
+			fmt.Println(file.Name())
+		}
+
 	case "echo":
 		fmt.Println(strings.Join(args, " "))
+
+	case "sleep":
+		duration, err := strconv.ParseInt(args[0], 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		time.Sleep(time.Duration(duration) * time.Second)
 	}
 
-	log("child end")
+	status("child end")
 	c <- 1
 }
