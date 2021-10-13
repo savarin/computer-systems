@@ -1,7 +1,5 @@
 // TODO:
 // - handle eof terminal character
-// - catch non-numerical sleep argument
-// - non-current directory ls
 
 package main
 
@@ -12,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/signal"
 	"runtime"
 	"strconv"
 	"strings"
@@ -38,9 +37,12 @@ func main() {
 	// WithCancel returns a copy of parent with a new Done channel.
 	//   https://pkg.go.dev/context#WithCancel
 	ctx, cancel := context.WithCancel(context.Background())
-	go parent(ctx)
+	defer func() {
+		cancel()
+	}()
+
+	go parent(ctx, cancel)
 	wg.Wait()
-	cancel()
 
 	// Stop main from immediate exit.
 	time.Sleep(time.Second)
@@ -48,9 +50,21 @@ func main() {
 	status("main end")
 }
 
-func parent(ctx context.Context) {
+func parent(ctx context.Context, cancel context.CancelFunc) {
 	status("parent start")
+	fmt.Println("✨ enter shell ✨")
+
 	c := make(chan int)
+
+	// Set up channel to catch interrupt signal.
+	//   https://pace.dev/blog/2020/02/17/repond-to-ctrl-c-interrupt-signals-gracefully-with-context-in-golang-by-mat-ryer.html
+	s := make(chan os.Signal, 1)
+	signal.Notify(s, os.Interrupt)
+	status("signal start")
+	defer func() {
+		signal.Stop(s)
+		status("signal end")
+	}()
 
 	// NewReader returns a new Reader whose buffer has the default size.
 	//   https://pkg.go.dev/bufio#NewReader
@@ -79,6 +93,8 @@ func parent(ctx context.Context) {
 			select {
 			case <-ctx.Done():
 				status("parent content expired")
+			case <-s:
+				cancel()
 			case <-c:
 				status("child complete")
 			case <-time.After(time.Duration(timeout) * time.Second):
@@ -138,6 +154,7 @@ func child(ctx context.Context, cmd string, args []string, c chan int) {
 			fmt.Printf("%s: please specify an integer\n", args[0])
 		}
 		time.Sleep(time.Duration(duration) * time.Second)
+		fmt.Println("SLEEP COMPLETE")
 	}
 
 	status("child end")
