@@ -10,7 +10,7 @@ memory-hierarchy illustrates the speed ups obtained via cache-friendly software 
 
 ## Context
 
-The performance improvements in optimizing calculations involving average age are as follows:
+The performance improvements in optimizing calculation of average age are as follows:
 
 | calculation                 | ns/op     | improvement |
 | --------------------------- | --------- | ----------- |
@@ -22,7 +22,7 @@ The performance improvements in optimizing calculations involving average age ar
 | loop unrolling              |     27246 |        211x |
 | bound check elimination     |     18240 |        315x |
 
-The performance improvements in optimizing calculations involving average payments are as follows:
+The performance improvements in optimizing calculation of average payments are as follows:
 
 | calculation                 | ns/op    | improvement |
 |-----------------------------|----------|-------------|
@@ -33,7 +33,7 @@ The performance improvements in optimizing calculations involving average paymen
 | loop unrolling              |   511733 |         57x |
 | bound check elimination     |   345569 |         84x |
 
-The performance improvements in optimizing calculations involving average payments are as follows:
+The performance improvements in optimizing calculation of standard deviation payments are as follows:
 
 
 | calculation                 | ns/op    | improvement |
