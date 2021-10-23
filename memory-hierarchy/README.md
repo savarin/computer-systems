@@ -157,15 +157,6 @@ in a PR format [here](https://github.com/savarin/computer-systems/commit/d25677e
 | convert to array            |    535163 |         11x |
 
 ```go
-package metrics
-
-import (
-    "encoding/csv"
-    "log"
-    "os"
-    "strconv"
-)
-
 func AverageAge(ages []int) float64 {
     average, count := 0.0, 0.0
     for _, age := range ages {
